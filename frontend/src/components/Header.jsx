@@ -6,7 +6,7 @@ function Header(name) {
 
   useEffect(() => {
     const typedInstance = new typed(el.current, {
-      strings: ['0123456789', name.name],
+      strings: [name.name],
       typeSpeed: 50,
       loop: false,
       showCursor: false,

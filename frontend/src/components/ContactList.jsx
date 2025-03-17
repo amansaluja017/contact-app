@@ -18,7 +18,7 @@ function ContactList() {
           {},
           { withCredentials: true }
         );
-        if(response.status === 200) {
+        if (response.status === 200) {
           setContacts(response.data.data);
         }
       } catch (error) {
@@ -27,15 +27,18 @@ function ContactList() {
     })();
     setSearchValue(el.current.value);
     const newSearchValue = contacts.filter((contact) => {
-      return Object.values(contact).join(' ').toLowerCase().includes(searchValue.toLowerCase());
-    })
+      return Object.values(contact)
+        .join(" ")
+        .toLowerCase()
+        .includes(searchValue.toLowerCase());
+    });
     setSearchResult(newSearchValue);
   }, [searchValue]);
 
   let value = contacts;
 
-  if(searchValue.length < 1) {
-    value = contacts
+  if (searchValue.length < 1) {
+    value = contacts;
   } else {
     value = searchResult;
   }
@@ -58,7 +61,15 @@ function ContactList() {
               <path d="m21 21-4.3-4.3"></path>
             </g>
           </svg>
-          <input ref={el} onChange={(e) => {setSearchValue(e.target.value)}} type="search" className="grow" placeholder="Search" />
+          <input
+            ref={el}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+            }}
+            type="search"
+            className="grow"
+            placeholder="Search"
+          />
           <kbd className="kbd kbd-sm">⌘</kbd>
           <kbd className="kbd kbd-sm">K</kbd>
         </label>
@@ -83,7 +94,7 @@ function ContactList() {
                       withCredentials: true,
                     }
                   );
-                  if(response.status === 200) {
+                  if (response.status === 200) {
                     const contactData = response.data.data;
                     navigate("/select-contact", { state: contactData });
                   }
