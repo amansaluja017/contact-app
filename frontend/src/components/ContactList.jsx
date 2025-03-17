@@ -1,10 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function ContactList() {
   const [contacts, setContacts] = React.useState([]);
+  const [searchValue, setSearchValue] = React.useState("");
+  const [searchResult, setSearchResult] = React.useState([]);
   const navigate = useNavigate();
+
+  const el = useRef();
 
   useEffect(() => {
     (async () => {
@@ -14,22 +18,58 @@ function ContactList() {
           {},
           { withCredentials: true }
         );
-        setContacts(response.data.data);
+        if(response.status === 200) {
+          setContacts(response.data.data);
+        }
       } catch (error) {
         console.log(error);
       }
     })();
-  }, []);
+    setSearchValue(el.current.value);
+    const newSearchValue = contacts.filter((contact) => {
+      return Object.values(contact).join(' ').toLowerCase().includes(searchValue.toLowerCase());
+    })
+    setSearchResult(newSearchValue);
+  }, [searchValue]);
+
+  let value = contacts;
+
+  if(searchValue.length < 1) {
+    value = contacts
+  } else {
+    value = searchResult;
+  }
 
   return (
     <div>
+      <div className="p-4">
+        <label className="input">
+          <svg
+            className="h-[1em] opacity-50"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24">
+            <g
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeWidth="2.5"
+              fill="none"
+              stroke="currentColor">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </g>
+          </svg>
+          <input ref={el} onChange={(e) => {setSearchValue(e.target.value)}} type="search" className="grow" placeholder="Search" />
+          <kbd className="kbd kbd-sm">⌘</kbd>
+          <kbd className="kbd kbd-sm">K</kbd>
+        </label>
+      </div>
       {contacts.length === 0 ? (
-          <div className="text-center mt-5">
-            <h1>No contacts found</h1>
-          </div>
-        ) : null}
+        <div className="text-center mt-5">
+          <h1>No contacts found</h1>
+        </div>
+      ) : null}
       <ul className="list bg-base-100 rounded-box shadow-md">
-        {contacts.map((contact) => {
+        {value.map((contact) => {
           return (
             <li
               onClick={async () => {
@@ -43,9 +83,10 @@ function ContactList() {
                       withCredentials: true,
                     }
                   );
-                  const contactData = response.data.data;
-                  console.log(contactData);
-                  navigate("/select-contact", { state: contactData });
+                  if(response.status === 200) {
+                    const contactData = response.data.data;
+                    navigate("/select-contact", { state: contactData });
+                  }
                 } catch (error) {
                   console.log(error);
                 }
