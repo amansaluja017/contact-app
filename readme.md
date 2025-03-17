@@ -53,7 +53,7 @@ contact-app/
 
 1. Clone the repository
 ```bash
-git clone [repository-url]
+git clone https://github.com/amansaluja017/contact-app.git
 cd contact-app
 ```
 
