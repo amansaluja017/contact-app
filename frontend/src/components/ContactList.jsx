@@ -1,16 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function ContactList() {
-  const [contacts, setContacts] = React.useState([]);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [searchResult, setSearchResult] = React.useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const el = useRef();
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       try {
         const response = await axios.get(
@@ -23,6 +25,8 @@ function ContactList() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     })();
     setSearchValue(el.current.value);
@@ -74,11 +78,14 @@ function ContactList() {
           <kbd className="kbd kbd-sm">K</kbd>
         </label>
       </div>
-      {contacts.length === 0 ? (
-        <div className="text-center mt-5">
-          <h1>No contacts found</h1>
+      {!loading && contacts.length < 1 ? (
+        <div className="text-center mt-15">
+          <h1 className="text-lg">No contacts found</h1>
         </div>
       ) : null}
+      {loading ? <div className="text-center">
+        <div className="skeleton w-full h-screen"></div>
+      </div> : null}
       <ul className="list bg-base-100 rounded-box shadow-md">
         {value.map((contact) => {
           return (

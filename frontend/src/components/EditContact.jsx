@@ -3,6 +3,7 @@ import Header from "./Header";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ChevronLeft } from "lucide-react";
 
 function EditContact() {
   const { register, handleSubmit } = useForm();
@@ -14,34 +15,47 @@ function EditContact() {
   const nameId = useId();
   const emailId = useId();
   const phoneId = useId();
+  const addressId = useId();
 
   const { state } = useLocation();
   const data = state || {};
   const contactId = data._id;
 
   useEffect(() => {
-    setContactData(contactId)
-  },[contactId]);
-  
+    setContactData(contactId);
+  }, [contactId]);
 
   const submit = (data) => {
-    setError(' ');
+    setError(" ");
     (async () => {
-        try {
-            const response = await axios.patch(`${import.meta.env.VITE_URL}/api/v1/contact/update-contact`, 
-                {name: data.name, email: data.email, phone_number: data.phone_number, contactId: contactData},
-                {withCredentials: true}
-            )
-            navigate('/')
-        } catch (error) {
-            console.log(error);
-            setError(error);
-        }
+      try {
+        const response = await axios.patch(
+          `${import.meta.env.VITE_URL}/api/v1/contact/update-contact`,
+          {
+            name: data.name,
+            email: data.email,
+            phone_number: data.phone_number,
+            contactId: contactData,
+          },
+          { withCredentials: true }
+        );
+        navigate("/");
+      } catch (error) {
+        console.log(error);
+        setError(error);
+      }
     })();
-  }
+  };
 
   return (
     <div>
+      <div
+        onClick={() => {
+          navigate(-1);
+        }}
+        className="absolute p-1 top-3 left-3 bg-black rounded-full">
+        <ChevronLeft />
+      </div>
       <div>
         <Header name="Edit Contact" />
       </div>
@@ -54,7 +68,8 @@ function EditContact() {
               type="text"
               defaultValue={data.name}
               placeholder="Type here"
-              className="input"
+              className="input validator"
+              minLength="1"
               required
               {...register("name", { required: true })}
             />
@@ -66,7 +81,7 @@ function EditContact() {
               type="email"
               defaultValue={data.email}
               placeholder="Type here"
-              className="input"
+              className="input validator"
               {...register("email")}
             />
           </div>
@@ -74,19 +89,32 @@ function EditContact() {
             <label htmlFor={phoneId}>Phone Number</label>
             <input
               id={phoneId}
-              type="number"
+              type="tel"
               defaultValue={data.phone_number}
+              className="input validator tabular-nums"
+              required
               placeholder="Type here"
-              className="input"
+              pattern="[0-9]*"
               minLength="10"
               maxLength="10"
-              pattern="/^(?:(?:\+91|0)?[6-9]\d{9})$/"
-              required
+              title="Must be 10 digits"
               {...register("phone_number", {
                 required: true,
                 maxLength: 10,
                 minLength: 10,
               })}
+            />
+          </div>
+          <div className="flex flex-col gap-2 mt-4">
+            <label htmlFor={addressId}>Address</label>
+            <input
+              id={addressId}
+              type="text"
+              defaultValue={data.address}
+              placeholder="Type here"
+              className="input validator"
+              required
+              {...register("address")}
             />
           </div>
 

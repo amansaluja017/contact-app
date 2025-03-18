@@ -16,12 +16,6 @@ const contactSchema = new Schema({
         unique: true,
         minlength: 10,
         maxlength: 10,
-        validate: {
-            validator: function(v) {
-                return /^(?:(?:\+91|0)?[6-9]\d{9})$/.test(v);
-            },
-            message: 'Phone number should only contain digits.'
-        }
     },
     address: {
         type: String,
